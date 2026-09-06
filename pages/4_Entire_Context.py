@@ -8,7 +8,13 @@ if status["available"]:
     st.success("Entire CLI connected. Native checkpoints shown below are real Entire records.")
     checkpoints,error=list_native_checkpoints(p.repository_path)
     if error: st.warning(error)
-    elif checkpoints: st.dataframe(checkpoints,use_container_width=True,hide_index=True)
+    elif checkpoints:
+        incomplete=[c for c in checkpoints if c.get("context_completeness") != "complete"]
+        if incomplete:
+            st.warning("Privacy boundary active: some checkpoints have redacted or unavailable context. Their summaries are useful but incomplete and must not be treated as authoritative.")
+        else:
+            st.info("Privacy boundary active: only safe checkpoint metadata is shown.")
+        st.dataframe(checkpoints,use_container_width=True,hide_index=True)
     else: st.info("Entire is enabled, but this repository has no checkpoints yet.")
 else:
     st.warning(status["message"])

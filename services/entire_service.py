@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 from models import EntireCheckpoint
+from services.privacy_service import sanitize_checkpoint
 from utils.helpers import now_iso
 
 def _cli():
@@ -42,10 +43,12 @@ def list_native_checkpoints(repository_path=None):
         return [], error
     try:
         parsed = json.loads(output)
-        return parsed if isinstance(parsed, list) else parsed.get("checkpoints", []), None
+        records = parsed if isinstance(parsed, list) else parsed.get("checkpoints", [])
+        return [sanitize_checkpoint(record) for record in records], None
     except (json.JSONDecodeError, AttributeError):
         return [], "Entire returned checkpoint data in an unexpected format."
 
 def collect_context(project_id,checkpoint_id,manual=None):
     m=manual or {}
-    return EntireCheckpoint(checkpoint_id=checkpoint_id,project_id=project_id,timestamp=now_iso(),intent=m.get("intent","Capture and explain the latest development change."),assumptions=m.get("assumptions",[]),actions_attempted=m.get("actions_attempted",[]),failures=m.get("failures",[]),unresolved_work=m.get("unresolved_work",[]),verification_status=m.get("verification_status","not verified"),source="manual" if manual else "demo/mock")
+    safe = sanitize_checkpoint(m)
+    return EntireCheckpoint(checkpoint_id=checkpoint_id,project_id=project_id,timestamp=now_iso(),intent=safe.get("intent","Capture and explain the latest development change."),assumptions=safe.get("assumptions",[]),actions_attempted=safe.get("actions_attempted",[]),failures=safe.get("failures",[]),unresolved_work=safe.get("unresolved_work",[]),verification_status=safe.get("verification_status","not verified"),source="manual" if manual else "demo/mock",context_completeness=safe["context_completeness"],redacted_fields=safe["redacted_fields"])
