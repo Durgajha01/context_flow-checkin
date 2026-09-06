@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 class CodeChange(BaseModel):
     change_id: str; project_id: str; checkpoint_id: str; timestamp: str; file_path: str; change_type: str; insertions: int = 0; deletions: int = 0; diff_summary: str = ""
 class EntireCheckpoint(BaseModel):
-    checkpoint_id: str; project_id: str; timestamp: str; intent: str = ""; assumptions: List[str] = Field(default_factory=list); actions_attempted: List[str] = Field(default_factory=list); failures: List[str] = Field(default_factory=list); unresolved_work: List[str] = Field(default_factory=list); verification_status: str = "unknown"; source: str = "manual"
+    checkpoint_id: str; project_id: str; timestamp: str; intent: str = ""; assumptions: List[str] = Field(default_factory=list); actions_attempted: List[str] = Field(default_factory=list); failures: List[str] = Field(default_factory=list); unresolved_work: List[str] = Field(default_factory=list); verification_status: str = "unknown"; source: str = "manual"; context_completeness: str = "complete"; redacted_fields: List[str] = Field(default_factory=list)
 class GraphImpact(BaseModel):
     impact_id: str; project_id: str; checkpoint_id: str; changed_component: str; related_components: List[str] = Field(default_factory=list); dependencies: List[str] = Field(default_factory=list); impacted_modules: List[str] = Field(default_factory=list); verification_status: str = "estimated"
 class DevelopmentEvent(BaseModel):

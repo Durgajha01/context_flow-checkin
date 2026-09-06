@@ -1,0 +1,7 @@
+{
+  "checkpoint_id": "cp-redacted",
+  "intent": "Investigate authentication latency",
+  "prompt": "customer password and account number",
+  "transcript": "full private agent transcript",
+  "verification_status": "partially verified"
+}
